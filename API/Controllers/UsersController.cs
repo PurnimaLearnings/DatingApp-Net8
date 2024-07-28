@@ -1,22 +1,25 @@
-﻿using System.Security.Cryptography.X509Certificates;
-using API.Data;
+﻿using API.Data;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace API;
+namespace API.Controllers;
 
-[ApiController]
-[Route("api/[Controller]")]
-public class UsersController(DataContext context): ControllerBase
+public class UsersController(DataContext context) : BaseAPIController
 {
+    [AllowAnonymous]
     [HttpGet]
-    public ActionResult<IEnumerable<AppUser>> GetUsers(){
-        var users= context.Users.ToList();
+    public ActionResult<IEnumerable<AppUser>> GetUsers()
+    {
+        var users = context.Users.ToList();
         return Ok(users);
     }
-[HttpGet("{id}")]//api/users/2
-    public ActionResult<IEnumerable<AppUser>> GetUser(int id){
-        var user= context.Users.Find(id);
-        if(user==null)
+
+    [Authorize]
+    [HttpGet("{id}")]//api/users/2
+    public ActionResult<IEnumerable<AppUser>> GetUser(int id)
+    {
+        var user = context.Users.Find(id);
+        if (user == null)
         {
             return NotFound();
         }
