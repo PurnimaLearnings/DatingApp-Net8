@@ -1,0 +1,11 @@
+<h4>Internal Server errors</h4>
+@if(error){
+    <h5>error: {{error.message}}</h5>
+    <p>If you are seeing this error, please follow the below steps.</p>
+    <p> Please check the details in network tab of browser. Share the details with the support team.</p>
+}
+
+<p>Following is the stack trace</p>
+<code class="mt-5">
+    {{error.details}}
+</code>
