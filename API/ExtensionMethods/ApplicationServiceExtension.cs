@@ -1,3 +1,4 @@
+using System.Reflection;
 using API;
 using API.Data;
 using Microsoft.EntityFrameworkCore;
@@ -15,7 +16,8 @@ public static class ApplicationServiceExtension
         {
             opt.UseSqlite(config.GetConnectionString("DefaultConnection"));
         });
-
+        services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+        services.AddScoped<IUserRepository,UserRepository>();
         return services;
     }
 
