@@ -9,25 +9,12 @@ import { HttpClient } from '@angular/common/http';
   templateUrl: './home.component.html',
   styleUrl: './home.component.css'
 })
-export class HomeComponent implements OnInit {
-  ngOnInit(): void {
-this.getUsers();
-  }
+export class HomeComponent {
   http=inject(HttpClient);
-
   users: any;
   registerMode = false;
   registerToggle() {
     this.registerMode = !this.registerMode;
-  }
-
-  getUsers(){
-    this.http.get("https://localhost:5001/api/users").subscribe({
-      next:response=> this.users=response,
-      error:error=>console.log(error),
-      complete: ()=>console.log("Request completed"),
-    })
-    
   }
 
   cancelRegisterMode(event: boolean){
