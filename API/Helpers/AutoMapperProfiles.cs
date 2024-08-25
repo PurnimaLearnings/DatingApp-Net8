@@ -14,6 +14,6 @@ CreateMap<AppUser, MemberDTO>()
 .ForMember(d=>d.PhotoUrl, o=>o.MapFrom(s=>s.Photos.FirstOrDefault(x=>x.IsMain)!.url));
 
 CreateMap<Photo, PhotoDTO>();    
-
+CreateMap<MemberUpdateDTO, AppUser>();
 }
 }

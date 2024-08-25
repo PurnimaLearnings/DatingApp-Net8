@@ -1,4 +1,5 @@
-﻿using API.Data;
+﻿using System.Security.Claims;
+using API.Data;
 using API.DTOs;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
@@ -6,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers;
 [Authorize]
-public class UsersController(IUserRepository repository) : BaseAPIController
+public class UsersController(IUserRepository repository, IMapper mapper) : BaseAPIController
 {
     [HttpGet]
     public async Task<ActionResult<IEnumerable<MemberDTO>>> GetUsers()
@@ -26,5 +27,25 @@ public class UsersController(IUserRepository repository) : BaseAPIController
         }
       
         return Ok(user);
+    }
+
+    [HttpPut]
+    public async Task<ActionResult> UpdateUser(MemberUpdateDTO memberUpdateDTO){
+        var username= User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        if(username==null){
+            return BadRequest("No user name found in the claim.");
+        }
+
+        var user= await repository.GetUserAsyncByUsername(username);
+        if(user==null){
+            return BadRequest("Could not find the user.");
+        }
+
+        mapper.Map(memberUpdateDTO, user);
+        
+        if(await repository.SaveAllAsync()){
+            return NoContent();
+        }
+        return BadRequest("failed to update the user.");
     }
 }
