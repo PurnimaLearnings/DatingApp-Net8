@@ -10,7 +10,7 @@ Task<Boolean> SaveAllAsync();
 Task<IEnumerable<AppUser>> GetUsersAsync();
 Task<AppUser> GetUserAsyncById(int id);
 
-Task<AppUser> GetUserAsyncByUsername(string Username);
+Task<AppUser> GetUserByUsernameAsync(string Username);
 
 Task<IEnumerable<MemberDTO>> GetMemebersAsync();
 
