@@ -4,6 +4,8 @@ import { DecimalPipe, NgClass, NgFor, NgIf, NgStyle } from '@angular/common';
 import { FileUploader, FileUploadModule } from 'ng2-file-upload';
 import { AccountsService } from '../../_services/accounts.service';
 import { environment } from '../../../environments/environment';
+import { MembersService } from '../../_services/members.service';
+import { Photo } from '../../_models/photo';
 
 @Component({
   selector: 'app-photo-editor',
@@ -13,6 +15,14 @@ import { environment } from '../../../environments/environment';
   styleUrl: './photo-editor.component.css'
 })
 export class PhotoEditorComponent implements OnInit {
+  private accountService= inject(AccountsService);
+  private memberService=inject(MembersService);
+
+  member= input.required<Member>();
+
+uploader?:FileUploader;
+hasBaseDropZoneOver=false;
+baseUrl=environment.apiurl;
   
  memberChange=output<Member>();
 
@@ -24,6 +34,25 @@ fileOverBase(e: any){
   this.hasBaseDropZoneOver=e;
 }
 
+setMainPhoto(photo:Photo){
+this.memberService.setMainPhoto(photo).subscribe({
+  next:_=>{
+    const user=this.accountService.CurrentUser();
+    if(user){
+      user.photoUrl=photo.uRl;
+      this.accountService.setCurrentUser(user);
+    }
+    const updatedMember={...this.member()}
+    updatedMember.photoUrl=photo.uRl;
+    updatedMember.photos.forEach(p=>{
+      if(p.isMain)
+        p.isMain=false;
+      if(p.id==photo.id) p.isMain=true;
+    });
+    this.memberChange.emit(updatedMember);
+  }
+})
+}
 initializeUploader(){
   this.uploader=new FileUploader({
     url:this.baseUrl+'users/add-photo',
@@ -46,10 +75,4 @@ this.uploader.onSuccessItem=(item, response, status, headers)=>{
 }
 }
 
-private accountService= inject(AccountsService);
-  member= input.required<Member>();
-
-uploader?:FileUploader;
-hasBaseDropZoneOver=false;
-baseUrl=environment.apiurl;
 }
