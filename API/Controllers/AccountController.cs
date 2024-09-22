@@ -1,6 +1,7 @@
 using System.Security.Cryptography;
 using System.Text;
 using API.Data;
+using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.EntityFrameworkCore;
@@ -8,7 +9,7 @@ using Microsoft.EntityFrameworkCore;
 namespace API.Controllers;
 
 
-public class AccountController(DataContext context, ITokenService tokenService) : BaseAPIController
+public class AccountController(DataContext context, ITokenService tokenService, IMapper mapper) : BaseAPIController
 {
 
     [HttpPost("register")]
@@ -20,22 +21,21 @@ public class AccountController(DataContext context, ITokenService tokenService) 
             return BadRequest("User name is already taken");
         }
 
-return Ok();
-        // var hmac = new HMACSHA1();
+        var hmac = new HMACSHA1();
 
-        // var user = new AppUser
-        // {
-        //     UserName = registerDTO.UserName,
-        //     PasswordHash = hmac.ComputeHash(Encoding.UTF8.GetBytes(registerDTO.Password)),
-        //     PasswordSalt = hmac.Key
-        // };
-        // context.Users.Add(user);
-        // await context.SaveChangesAsync();
-        // var userDTO= new UserDTO{
-        //     Username=user.UserName,
-        //     Token= tokenService.CreateToken(user)
-        // };
-        // return userDTO;
+        var user= mapper.Map<AppUser>(registerDTO);
+        user.UserName=registerDTO.UserName.ToLower();
+        user.PasswordHash=hmac.ComputeHash(Encoding.UTF8.GetBytes(registerDTO.Password));
+        user.PasswordSalt = hmac.Key;
+        context.Users.Add(user);
+        await context.SaveChangesAsync();
+
+        var userDTO= new UserDTO{
+            Username=user.UserName,
+            Token= tokenService.CreateToken(user),
+            KnownAs=user.KnownAs
+        };
+        return userDTO;
 
     }
 
@@ -64,6 +64,7 @@ return Ok();
         var userDTO= new UserDTO(){
             Username=user.UserName,
             Token=tokenService.CreateToken(user),
+            KnownAs=user.KnownAs,
             PhotoUrl=user.Photos.FirstOrDefault(x=>x.IsMain)?.url
         };
         return userDTO;

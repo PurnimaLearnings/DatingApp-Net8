@@ -81,8 +81,24 @@ this.uploader.onSuccessItem=(item, response, status, headers)=>{
   const photo=JSON.parse(response);
   const updatedMember={...this.member()}
   updatedMember.photos.push(photo);
+
   this.memberChange.emit(updatedMember);  
+  if(photo.isMain){
+    const user=this.accountService.CurrentUser();
+    if(user){
+      user.photoUrl=photo.uRl;
+      this.accountService.setCurrentUser(user);
+    }
+    updatedMember.photoUrl=photo.uRl;
+    updatedMember.photos.forEach(p=>{
+      if(p.isMain)
+        p.isMain=false;
+      if(p.id==photo.id) p.isMain=true;
+    });
+    this.memberChange.emit(updatedMember);
+  }
 }
+
 }
 
 }

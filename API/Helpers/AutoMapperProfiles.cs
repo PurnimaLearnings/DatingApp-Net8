@@ -15,5 +15,7 @@ CreateMap<AppUser, MemberDTO>()
 
 CreateMap<Photo, PhotoDTO>();    
 CreateMap<MemberUpdateDTO, AppUser>();
+CreateMap<RegisterDTO, AppUser>();
+CreateMap<string,DateOnly>().ConstructUsing(s=>DateOnly.Parse(s));
 }
 }
