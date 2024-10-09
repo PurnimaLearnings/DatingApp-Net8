@@ -1,6 +1,7 @@
 using API.Data;
 using API.DTOs;
 using API.Entities;
+using API.Helpers;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using Microsoft.EntityFrameworkCore;
@@ -16,9 +17,12 @@ public class UserRepository(DataContext context, IMapper mapper) : IUserReposito
         ProjectTo<MemberDTO>(mapper.ConfigurationProvider).SingleOrDefaultAsync();
     }
 
-    public async Task<IEnumerable<MemberDTO>> GetMemebersAsync()
+    public async Task<PagedList<MemberDTO>> GetMemebersAsync(UserParams userParams)
     {
-       return await context.Users.ProjectTo<MemberDTO>(mapper.ConfigurationProvider).ToListAsync();
+       var query= context.Users.
+       ProjectTo<MemberDTO>(mapper.ConfigurationProvider);
+
+       return await PagedList<MemberDTO>.CreateAsync(query, userParams.PageNumber, userParams.PageSize);
     }
 
     public  async Task<AppUser?> GetUserAsyncById(int id)

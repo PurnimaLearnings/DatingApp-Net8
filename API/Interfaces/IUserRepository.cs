@@ -1,4 +1,5 @@
 using API.DTOs;
+using API.Helpers;
 
 namespace API;
 
@@ -12,7 +13,7 @@ Task<AppUser> GetUserAsyncById(int id);
 
 Task<AppUser> GetUserByUsernameAsync(string Username);
 
-Task<IEnumerable<MemberDTO>> GetMemebersAsync();
+Task<PagedList<MemberDTO>> GetMemebersAsync(UserParams userParamsS);
 
 Task<MemberDTO?> GetMemberAsync(string username);
 }

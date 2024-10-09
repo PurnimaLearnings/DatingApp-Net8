@@ -15,10 +15,12 @@ public class UsersController(IUserRepository repository, IMapper mapper,
  IPhotoService photoService) : BaseAPIController
 {
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<MemberDTO>>> GetUsers()
+    public async Task<ActionResult<IEnumerable<MemberDTO>>> GetUsers([FromQuery]UserParams userParams)
     {
-        var users = await repository.GetMemebersAsync();
         
+        var users = await repository.GetMemebersAsync(userParams);
+        Response.AddPaginationHeader(users);
+
         return Ok(users);
     }
 

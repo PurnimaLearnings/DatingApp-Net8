@@ -14,15 +14,17 @@ export class MemberListComponent implements OnInit {
 
   memberService=inject(MembersService);
   members:Member[]=[];
+  pageNumber=1;
+  pageSize=5;
   ngOnInit(): void {
-    if(this.memberService.members.length==0){
+    if(!this.memberService.paginatedResults()){
       this.loadMemebers();
 
     }
   }
 
   loadMemebers(){
-    this.memberService.getMembers()
+    this.memberService.getMembers(this.pageNumber, this.pageSize)
   }
 
 }
